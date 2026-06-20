@@ -1,14 +1,24 @@
-
-import pickle
+import sys
 import streamlit as st
 import joblib
-import pandas as pd
+import sklearn
+import sklearn.compose._column_transformer
 
-# Load the trained model
-# Assuming 'RidgeModel_new.joblib' was successfully saved from the pipeline object
-# You might need to re-run the cell where the 'pipe' was defined and saved if it wasn't successful.
+# Python 3.14 + scikit-learn version mismatch fix hack
+class Dummy:
+    pass
+
+if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
+    sklearn.compose._column_transformer._RemainderColsList = Dummy
+
+# Ab bina kisi crash ke aapka model load hoga
 try:
+    model = joblib.load('RidgeModel.pkl')
+except Exception:
     model = joblib.load('RidgeModel_new.joblib')
+    pass
+try:
+    model = joblib.load('RidgeModel.pkl')
 except FileNotFoundError:
     st.error("Model file 'RidgeModel_new.joblib' not found. Please ensure it has been saved correctly.")
     st.stop()
